@@ -1,0 +1,19 @@
+# Environment variables (Secret Token!)
+.env
+
+# Python junk
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local virtual environment
+venv/
+
+# Bot temporary files
+temp_files/
+/temp_files/*
+
+# IDE settings
+.vscode/
+.idea/
