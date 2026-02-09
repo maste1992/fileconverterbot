@@ -46,7 +46,42 @@ def docx_to_pdf(input_path, output_path):
     return libreoffice_convert(input_path, output_path, 'pdf')
 
 def docx_to_excel(input_path, output_path):
-    return libreoffice_convert(input_path, output_path, 'xlsx')
+    """Converts DOCX to Excel (extracting text and tables)."""
+    try:
+        from docx import Document
+        import xlsxwriter
+        
+        doc = Document(input_path)
+        workbook = xlsxwriter.Workbook(output_path)
+        worksheet = workbook.add_worksheet()
+        
+        row = 0
+        
+        # Iterate through elements (paragraphs and tables)
+        # Note: order is tricky because python-docx separates them,
+        # but we'll process paragraphs then tables or just sequentially if possible.
+        # For simplicity, let's just dump paragraphs then tables for now, 
+        # or iterate through doc.element.body to preserve order (complex).
+        # Simple approach: Paragraphs first.
+        
+        for para in doc.paragraphs:
+            if para.text.strip():
+                worksheet.write(row, 0, para.text)
+                row += 1
+                
+        # Then tables
+        for table in doc.tables:
+            for i, doc_row in enumerate(table.rows):
+                for j, cell in enumerate(doc_row.cells):
+                    worksheet.write(row, j, cell.text)
+                row += 1
+            row += 1 # Empty row between tables
+            
+        workbook.close()
+        return True
+    except Exception as e:
+        print(f"Error converting DOCX to Excel: {e}")
+        return False
 
 def docx_to_image(input_path, output_path):
     # Try LibreOffice
